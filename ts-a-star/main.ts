@@ -1,6 +1,5 @@
 import { PriorityQueue } from '@datastructures-js/priority-queue';
 
-// 計算をするクラス
 class CalculationAStarAlgorithm {
     dungeon: string[][];
 
@@ -8,14 +7,13 @@ class CalculationAStarAlgorithm {
         this.dungeon = dungeon.map(row => row.split(''));
     }
 
-    // 引数　search_criteria_charactor　は検索する際基準となる文字
     getCharacotorCoordinates(search_criteria_charactor: string): [number, number] | undefined {
-        for (let index_height = 0; index_height < this.dungeon.length; index_height++) {
-            const line = this.dungeon[index_height];
-            for (let index_wedth = 0; index_wedth < line.length; index_wedth++) {
-                const charactor = line[index_wedth];
+        for (let indexHeight = 0; indexHeight < this.dungeon.length; indexHeight++) {
+            const line = this.dungeon[indexHeight];
+            for (let indexWedth = 0; indexWedth < line.length; indexWedth++) {
+                const charactor = line[indexWedth];
                 if (charactor === search_criteria_charactor) {
-                    return [index_height, index_wedth];
+                    return [indexHeight, indexWedth];
                 }
             }
         }
@@ -36,15 +34,15 @@ class CalculationAStarAlgorithm {
         return path.length;
     }
 
-    // last_passed_position は最後に探索した座標
+    // lastPassedPosition は最後に探索した座標
     // 探索中の座標から四方の座標を計算する
-    *nextCandidatePosition(last_passed_position: [number, number]): Generator<[number, number]> {
+    *nextCandidatePosition(lastPassedPosition: [number, number]): Generator<[number, number]> {
         const wall = "*";
         const moves: [number, number][] = [[-1, 0], [1, 0], [0, -1], [0, 1]];
 
         for (const [dy, dx] of moves) {
-            const newY = last_passed_position[0] + dy;
-            const newX = last_passed_position[1] + dx;
+            const newY = lastPassedPosition[0] + dy;
+            const newX = lastPassedPosition[1] + dx;
             if (
                 newY >= 0 &&
                 newY < this.dungeon.length &&
@@ -60,33 +58,33 @@ class CalculationAStarAlgorithm {
     // a*アルゴリズムを実装した関数は以下
 
     aStarAlgorithm(start_coordinates: [number, number], goal_coordinates: [number, number]): [number, number][] {
-        const passed_list: [number, number][] = [start_coordinates];
-        const init_score = this.distance(passed_list) + this.heuristic(start_coordinates, goal_coordinates);
+        const passedList: [number, number][] = [start_coordinates];
+        const initScore = this.distance(passedList) + this.heuristic(start_coordinates, goal_coordinates);
 
-        const checked: { [key: string]: number } = { [start_coordinates.toString()]: init_score };
-        const searching_heap = new PriorityQueue<[number, [number, number][]]>(
+        const checked: { [key: string]: number } = { [start_coordinates.toString()]: initScore };
+        const searchingHeap = new PriorityQueue<[number, [number, number][]]>(
                (a, b) => a[0] - b[0]
           )
-        searching_heap.enqueue([init_score, passed_list]);
+        searchingHeap.enqueue([initScore, passedList]);
 
-        while (!searching_heap.isEmpty()) {
-            const [_, passed_list] = searching_heap.dequeue() as [number, [number, number][]];
-            const last_passed_position = passed_list[passed_list.length - 1];
+        while (!searchingHeap.isEmpty()) {
+            const [_, passedList] = searchingHeap.dequeue() as [number, [number, number][]];
+            const lastPassedPosition = passedList[passedList.length - 1];
 
-            if (last_passed_position[0] === goal_coordinates[0] && last_passed_position[1] === goal_coordinates[1]) {
-                return passed_list;
+            if (lastPassedPosition[0] === goal_coordinates[0] && lastPassedPosition[1] === goal_coordinates[1]) {
+                return passedList;
             }
 
-            for (const position of this.nextCandidatePosition(last_passed_position)) {
-                const new_passed_list = [...passed_list, position];
-                const position_score = this.distance(new_passed_list) + this.heuristic(position, goal_coordinates);
+            for (const position of this.nextCandidatePosition(lastPassedPosition)) {
+                const newPassedList = [...passedList, position];
+                const positionScore = this.distance(newPassedList) + this.heuristic(position, goal_coordinates);
 
-                if (checked[position.toString()] && checked[position.toString()] <= position_score) {
+                if (checked[position.toString()] && checked[position.toString()] <= positionScore) {
                     continue;
                 }
 
-                checked[position.toString()] = position_score;
-                searching_heap.enqueue([position_score, new_passed_list]);
+                checked[position.toString()] = positionScore;
+                searchingHeap.enqueue([positionScore, newPassedList]);
             }
         }
         return [];
