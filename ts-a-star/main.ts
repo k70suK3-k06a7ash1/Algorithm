@@ -20,8 +20,6 @@ class CalculationAStarAlgorithm {
         return undefined;
     }
 
-    // 予測値の計算　ヒューリスティック関数
-    // 公式f(n) = g(n) + h(n) におけるh(n) に該当するのが以下
     heuristic(position: [number, number], goal_coordinates: [number, number]): number {
         return Math.sqrt(
             Math.pow(position[0] - goal_coordinates[0], 2) +
@@ -29,13 +27,10 @@ class CalculationAStarAlgorithm {
         );
     }
 
-    // 公式f(n) = g(n) + h(n) におけるg(n) に該当するのが以下
     distance(path: [number, number][]): number {
         return path.length;
     }
 
-    // lastPassedPosition は最後に探索した座標
-    // 探索中の座標から四方の座標を計算する
     *nextCandidatePosition(lastPassedPosition: [number, number]): Generator<[number, number]> {
         const wall = "*";
         const moves: [number, number][] = [[-1, 0], [1, 0], [0, -1], [0, 1]];
@@ -54,8 +49,6 @@ class CalculationAStarAlgorithm {
             }
         }
     }
-
-    // a*アルゴリズムを実装した関数は以下
 
     aStarAlgorithm(start_coordinates: [number, number], goal_coordinates: [number, number]): [number, number][] {
         const passedList: [number, number][] = [start_coordinates];
@@ -90,7 +83,6 @@ class CalculationAStarAlgorithm {
         return [];
     }
 
-    // 計算された最短距離を元に、描画する処理が以下
     renderPath(path: [number, number][]): string[] {
         const structure = this.dungeon.map(row => [...row]);
 
@@ -105,9 +97,7 @@ class CalculationAStarAlgorithm {
     }
 }
 
-// 計算結果を出力するクラス
 class Result {
-    // 探索する迷路を宣言
     static dungeon = [
         '**************************',
         '* * *     S              *',
@@ -125,13 +115,9 @@ class Result {
     ];
 
     static calculation = new CalculationAStarAlgorithm(Result.dungeon);
-    // 開始を意味する”S”の座標を検索する
     static start_coordinates = Result.calculation.getCharacotorCoordinates("S");
-    // ゴールを意味する”G”の座標を検索する
     static goal_coordinates = Result.calculation.getCharacotorCoordinates("G");
-    // aStarAlgorithm関数を使用して探索する
     static path = Result.start_coordinates && Result.goal_coordinates ? Result.calculation.aStarAlgorithm(Result.start_coordinates, Result.goal_coordinates) : [];
-
     static printResult() {
         if (Result.path && Result.path.length > 0) {
             console.log(Result.calculation.renderPath(Result.path).join("\n"));
